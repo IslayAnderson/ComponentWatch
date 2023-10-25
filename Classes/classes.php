@@ -1,4 +1,4 @@
 <?php
-foreach (glob("*.php") as $filename) {
-    include_once $filename;
+foreach (glob("./Classes/*.php") as $filename) {
+    echo $filename!="./Classes/classes.php"?include_once($filename):"";
 }
