@@ -1,2 +1,4 @@
 <?php
-include_once("./environment.php");
+foreach (glob("*.php") as $filename) {
+    include_once $filename;
+}
