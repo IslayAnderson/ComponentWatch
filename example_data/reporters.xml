@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<site>
+    <domain>islayanderson.co.uk</domain>
+    <reporter option="cssSelector">.word_cloud</reporter>
+</site>
+<site>
+    <domain>islayanderson.co.uk</domain>
+    <reporter option="xpath">/html/body/main/div/div[2]/img</reporter>
+</site>
+<site>
+    <domain>islayanderson.co.uk</domain>
+    <reporter option="regex" regex="parent">(?:Portra 400)</reporter>
+</site>
