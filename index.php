@@ -8,11 +8,12 @@ include_once("./Classes/classes.php");
 
 $request = $_SERVER['REQUEST_URI'];
 
+
 switch ($request) {
-    case '/' /*|| '/index.php' */:
+    case '/':
         require __DIR__ . '/pages/index.php';
         break;
-    case 'reporters' :
+    case '/reporters' :
         require __DIR__ . '/pages/view_reporters.php';
         break;
     default:

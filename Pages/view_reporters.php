@@ -6,6 +6,7 @@
 //music: horsegiirL at the boiler room live from earth
 //tea: Yorkshire
 
+
 $reporters = new Reporters('example');
 
-var_dump($reporters.get_tables());
+var_dump($reporters->get_table());

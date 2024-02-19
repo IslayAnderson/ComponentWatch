@@ -1,7 +1,5 @@
 <?php 
 
-namespace reporters;
-
 class Reporters{
     //author: islay
     //music: Sub Focus and Dimension at Printworks Weekend X
@@ -11,14 +9,14 @@ class Reporters{
     private $data_loc;
     public $data;
 
-    public function __construct(Type $data_in = null) {
+    public function __construct(String $data_in = null) {
         switch($data_in){
-            case "example": $this->data_loc = $this->example_data;
-            case null: $this->data_loc = $this->default_data;
+            case "example": $this->data_loc = $this->example_data; break;
+            case null: $this->data_loc = $this->default_data; break;
             default: $this->data_loc = $data_in;
         }
 
-        $this->data = simplexml_load_file(__DIR__."/../..".$this->data_loc);
+        $this->data = simplexml_load_file($_SERVER["DOCUMENT_ROOT"].$this->data_loc);
     }
 
     public function get_table(){
