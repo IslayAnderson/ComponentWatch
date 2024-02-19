@@ -2,14 +2,20 @@
 <reporters>
     <site>
         <domain>islayanderson.co.uk</domain>
-        <reporter option="cssSelector">.word_cloud</reporter>
+        <option>cssSelector</option>
+        <return>self</return>
+        <reporter>.word_cloud</reporter>
     </site>
     <site>
         <domain>islayanderson.co.uk</domain>
-        <reporter option="xpath">/html/body/main/div/div[2]/img</reporter>
+        <option>xpath</option>
+        <return>child</return>
+        <reporter>/html/body/main/div/div[2]/img</reporter>
     </site>
     <site>
         <domain>islayanderson.co.uk</domain>
-        <reporter option="regex" regex="parent">(?:Portra 400)</reporter>
+        <option>regex</option>
+        <return>parent</return>
+        <reporter>(?:Portra 400)</reporter>
     </site>
 </reporters>

@@ -16,7 +16,10 @@ class Reporters{
             default: $this->data_loc = $data_in;
         }
 
-        $this->data = simplexml_load_file($_SERVER["DOCUMENT_ROOT"].$this->data_loc);
+        $this->data = json_decode(
+            json_encode(
+                (array) simplexml_load_file($_SERVER["DOCUMENT_ROOT"].$this->data_loc)
+            ), 1);
     }
 
     public function get_table(){

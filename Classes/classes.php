@@ -7,5 +7,4 @@ foreach (glob("./Classes/*.php") as $filename) {
 }
 foreach (glob("./Classes/*/*.php") as $filename) {
     include_once($filename);
-    echo '<br>' . $filename;
 }
