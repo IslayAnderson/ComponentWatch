@@ -40,7 +40,7 @@ export default function Home() {
               </div>    
           </div>
           <div className="flex min-h-screen flex-col items-center justify-between p-24">
-            <Image src="/Design.png" width="3840" height="2160" />
+            <Image src="/Design.png" width="3840" height="2160" alt="screenshot of componentWatch Dashboard Alpha"/>
           </div>
       </div>
     </main>
