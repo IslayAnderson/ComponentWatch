@@ -10,8 +10,8 @@ export default function Home() {
           </div>
           <div className="relative lg:pt-24 md:p-14 p-14 ml-auto">
               <div className="lg:w-2/3 text-center mx-auto">
-                  <h1 className="text-gray-900 dark:text-white font-bold text-5xl md:text-6xl xl:text-7xl">Unintrusive cross-platform solution to compnent analytics.</h1>
-                  <p className="mt-8 text-gray-700 dark:text-gray-300">componentWatch simplifies the process of configuring component analytics by abstracting your analytics away from everything under the hood empowing your content editors build optimised web pages</p>
+                  <h1 className="text-gray-900 dark:text-white font-bold text-5xl md:text-6xl xl:text-7xl">Unintrusive cross-platform solution to component analytics.</h1>
+                  <p className="mt-8 text-white">componentWatch simplifies the process of configuring component analytics by abstracting your analytics away from everything under the hood empowing your content editors build optimised web pages</p>
                   <div className="mt-16 flex flex-wrap justify-center gap-y-4 gap-x-6">
                       <a
                         href="mailto:hello@componentwatch.tech?subject=Registering%20my%20interest%20&body=I'm%20interested%20for%20a%20demo%20of%20componentWatch"
@@ -25,16 +25,16 @@ export default function Home() {
                   </div>
                   <div className=" py-8 mt-16 border-y border-gray-100 dark:border-gray-800 sm:flex justify-between">
                       <div className="text-left">
-                          <h6 className="text-lg font-semibold text-gray-700 dark:text-white">Flexibility</h6>
-                          <p className="mt-2 text-gray-500">Custom rulesets for identifying components</p>
+                          <h6 className="text-lg font-semibold text-white">Flexibility</h6>
+                          <p className="mt-2 text-white">Custom rulesets for identifying components</p>
                       </div>
                       <div className="text-left">
-                          <h6 className="text-lg font-semibold text-gray-700 dark:text-white">Intergration</h6>
-                          <p className="mt-2 text-gray-500">Intergration with google analytics reporting</p>
+                          <h6 className="text-lg font-semibold text-white">Intergration</h6>
+                          <p className="mt-2 text-white">Intergration with google analytics reporting</p>
                       </div>
                       <div className="text-left">
-                          <h6 className="text-lg font-semibold text-gray-700 dark:text-white">Lightweight</h6>
-                          <p className="mt-2 text-gray-500">Engineered from the begining with green computing in mind</p>
+                          <h6 className="text-lg font-semibold text-white">Lightweight</h6>
+                          <p className="mt-2 text-white">Engineered from the begining with green computing in mind</p>
                       </div>
                   </div>
               </div>    
