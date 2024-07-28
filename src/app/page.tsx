@@ -2,13 +2,13 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex min-h-screen flex-col items-center justify-between lg:p-18 md:p-14 sm:p-8 p-8">
       <div className="relative" id="home">
           <div aria-hidden="true" className="absolute inset-0 grid grid-cols-2 -space-x-52 opacity-40 dark:opacity-20">
               <div className="blur-[106px] h-56 bg-gradient-to-br from-primary to-purple-400 dark:from-blue-700"></div>
               <div className="blur-[106px] h-32 bg-gradient-to-r from-cyan-400 to-sky-300 dark:to-indigo-600"></div>
           </div>
-          <div className="relative pt-36 ml-auto">
+          <div className="relative lg:pt-24 md:p-14 p-14 ml-auto">
               <div className="lg:w-2/3 text-center mx-auto">
                   <h1 className="text-gray-900 dark:text-white font-bold text-5xl md:text-6xl xl:text-7xl">Unintrusive cross-platform solution to compnent analytics.</h1>
                   <p className="mt-8 text-gray-700 dark:text-gray-300">componentWatch simplifies the process of configuring component analytics by abstracting your analytics away from everything under the hood empowing your content editors build optimised web pages</p>
@@ -23,7 +23,7 @@ export default function Home() {
                         >
                       </a>
                   </div>
-                  <div className="hidden py-8 mt-16 border-y border-gray-100 dark:border-gray-800 sm:flex justify-between">
+                  <div className=" py-8 mt-16 border-y border-gray-100 dark:border-gray-800 sm:flex justify-between">
                       <div className="text-left">
                           <h6 className="text-lg font-semibold text-gray-700 dark:text-white">Flexibility</h6>
                           <p className="mt-2 text-gray-500">Custom rulesets for identifying components</p>
