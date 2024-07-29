@@ -48,8 +48,20 @@ export default function Home() {
                   </div>
               </div>    
           </div>
-          <div className="flex min-h-screen flex-col items-center justify-between">
-            <Image src="/Design.png" width="3840" height="2160" alt="screenshot of componentWatch Dashboard Alpha"/>
+          <div className="flex flex-col items-center ">
+            <h2 className="text-2xl font-semibold text-white py-2">Our Single focus is on components</h2>
+            <p className="text-md text-white lg:px-32 text-center">componentWatch ethos is to focus only on the functionality that makes understanding how your components are being used by your editors so you can make better use of your existing components and empower your editors to create even better content.</p>
+            <Image src="/Design.png" width="3840" height="2160" alt="screenshot of componentWatch Dashboard Alpha" className="py-8"/>
+          </div>
+          <div className="flex flex-col items-center  py-12">
+            <h2 className="text-2xl font-semibold text-white py-2 ">componentsWatch USP is simplicity</h2>
+            <p className="text-md text-white lg:px-32 text-center ">componentWatch architecture leaves nothing to speculation it simply looks at the page after load and reports to the platform what it sees.</p>
+            <ul className="text-md text-white list-disc pt-4 lg:px-64 ">
+              <li>No AI</li>
+              <li>No infrencing</li>
+              <li>Only accurate reporting</li>
+            </ul>
+            <Image src="https://raw.githubusercontent.com/IslayAnderson/ComponentWatch/docs/dfd.svg" width="3840" height="2160" alt="screenshot of componentWatch Dashboard Alpha" className="md:py-8 py-2"/>
           </div>
       </div>
     </main>
