@@ -16,6 +16,8 @@ class AnalyticsController extends Controller
     {
         Gate::authorize('view', $site);
 
+        $watcherApiUrl = config('services.watcher_api.url', 'http://localhost:8001');
+
         $discoveries = $component->discoveries()->latest()->get();
         $discoveryIds = $discoveries->pluck('id');
 
@@ -56,8 +58,6 @@ class AnalyticsController extends Controller
                 ];
             })
             ->values();
-
-        $watcherApiUrl = config('services.watcher_api.url', 'http://localhost:8001');
 
         $pageBreakdown = $discoveries
             ->groupBy('page_url')
