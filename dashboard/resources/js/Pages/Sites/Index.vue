@@ -39,7 +39,7 @@ function deleteSite(id) {
                         <!-- Screenshot thumbnail -->
                         <Link :href="route('sites.components.index', site.id)" class="block overflow-hidden bg-gray-100" style="aspect-ratio:4/3">
                             <img
-                                :src="`https://s.wordpress.com/mshots/v1/${encodeURIComponent(site.url)}?w=640&h=320`"
+                                :src="`https://s.wordpress.com/mshots/v1/${encodeURIComponent(site.url)}?w=640&h=480`"
                                 :alt="site.name"
                                 class="h-full w-full object-cover object-top transition-opacity duration-300"
                                 loading="lazy"
