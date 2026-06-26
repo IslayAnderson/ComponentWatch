@@ -80,6 +80,7 @@ class AnalyticsController extends Controller
                 'mouseovers' => $eventCounts->get('mouseover', 0),
                 'hover_time_events' => $eventCounts->get('hover_time', 0),
                 'avg_hover_ms' => $avgHoverMs ? round($avgHoverMs) : null,
+                'screenshot_detections' => $eventCounts->get('screenshot', 0),
             ],
             'page_breakdown' => $pageBreakdown,
             'html_hashes' => $htmlHashes,

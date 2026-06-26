@@ -6,8 +6,11 @@ export class Analytics {
   #apiUrl
   #headers
   #discoveryMap = new Map() // element -> discoveryId
+  #visibleElements = new Set() // elements currently in the viewport
   #buffer = []
   #flushInterval = null
+  #observer = null
+  #screenshotHandler = null
 
   constructor(apiUrl, headers) {
     this.#apiUrl = apiUrl
@@ -19,6 +22,9 @@ export class Analytics {
       this.#discoveryMap.set(element, discoveryId)
       this.#listen(element)
     }
+
+    this.#watchViewport()
+    this.#watchScreenshotShortcuts()
 
     this.#flushInterval = setInterval(() => this.#flush(), 5000)
     document.addEventListener('visibilitychange', () => {
@@ -38,6 +44,39 @@ export class Analytics {
         hoverStart = null
       }
     })
+  }
+
+  #watchViewport() {
+    this.#observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          this.#visibleElements.add(entry.target)
+        } else {
+          this.#visibleElements.delete(entry.target)
+        }
+      }
+    }, { threshold: 0.1 })
+
+    for (const el of this.#discoveryMap.keys()) {
+      this.#observer.observe(el)
+    }
+  }
+
+  #watchScreenshotShortcuts() {
+    this.#screenshotHandler = (e) => {
+      const mac = e.metaKey && e.shiftKey && ['3', '4', '5'].includes(e.key)
+      const win = e.key === 'PrintScreen'
+
+      if (!mac && !win) return
+
+      for (const el of this.#visibleElements) {
+        this.#record(el, 'screenshot', {
+          shortcut: e.key === 'PrintScreen' ? 'PrintScreen' : `Cmd+Shift+${e.key}`,
+        })
+      }
+    }
+
+    document.addEventListener('keydown', this.#screenshotHandler)
   }
 
   #record(el, type, payload = null) {
@@ -69,6 +108,10 @@ export class Analytics {
 
   destroy() {
     clearInterval(this.#flushInterval)
+    this.#observer?.disconnect()
+    if (this.#screenshotHandler) {
+      document.removeEventListener('keydown', this.#screenshotHandler)
+    }
     this.#flush()
   }
 }

@@ -92,6 +92,7 @@ async function requestScreenshot() {
                     <Stat label="Mouseovers" :value="stats.mouseovers" />
                     <Stat label="Hover Events" :value="stats.hover_time_events" />
                     <Stat label="Avg Hover Time" :value="formatMs(stats.avg_hover_ms)" />
+                    <Stat label="Screenshot Detections" :value="stats.screenshot_detections" />
                 </div>
 
                 <!-- Screenshots -->
