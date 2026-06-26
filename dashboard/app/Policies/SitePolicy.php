@@ -7,6 +7,12 @@ use App\Models\User;
 
 class SitePolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->isAdmin()) return true;
+        return null;
+    }
+
     public function view(User $user, Site $site): bool
     {
         return $user->id === $site->user_id;

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ImpersonateController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ComponentController;
 use App\Http\Controllers\ProfileController;
@@ -33,6 +35,10 @@ Route::middleware('auth')->group(function () {
         ->name('sites.components.analytics');
     Route::post('sites/{site}/components/{component}/screenshot-token', [ScreenshotTokenController::class, 'store'])
         ->name('sites.components.screenshot-token');
+
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::post('/admin/impersonate/{user}', [ImpersonateController::class, 'start'])->name('admin.impersonate');
+    Route::post('/admin/impersonate/stop', [ImpersonateController::class, 'stop'])->name('admin.impersonate.stop');
 });
 
 require __DIR__.'/auth.php';

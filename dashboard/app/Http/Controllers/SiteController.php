@@ -13,9 +13,12 @@ class SiteController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('Sites/Index', [
-            'sites' => auth()->user()->sites()->withCount('components')->latest()->get(),
-        ]);
+        $user = auth()->user();
+        $sites = $user->isAdmin()
+            ? Site::with('user')->withCount('components')->latest()->get()
+            : $user->sites()->withCount('components')->latest()->get();
+
+        return Inertia::render('Sites/Index', ['sites' => $sites]);
     }
 
     public function create(): Response
