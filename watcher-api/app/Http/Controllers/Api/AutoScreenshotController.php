@@ -34,7 +34,8 @@ class AutoScreenshotController extends Controller
         }
 
         $base64 = preg_replace('/^data:image\/\w+;base64,/', '', $validated['image']);
-        $filename = uniqid() . '.png';
+        $ext = str_contains($validated['image'], 'image/jpeg') ? 'jpg' : 'png';
+        $filename = uniqid() . '.' . $ext;
         $path = 'screenshots/' . $discovery->component_id . '/' . $filename;
         Storage::put($path, base64_decode($base64));
 

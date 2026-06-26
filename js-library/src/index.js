@@ -71,13 +71,13 @@ const ComponentWatcher = {
         data.needs_screenshot.forEach((needed, i) => {
           if (!needed) return
           const { element } = found[i]
-          html2canvas(element, { useCORS: true, logging: false })
+          html2canvas(element, { useCORS: true, logging: false, scale: 1 })
             .then(canvas => fetch(`${apiUrl}/api/auto-screenshot`, {
               method: 'POST',
               headers,
               body: JSON.stringify({
                 discovery_id: discoveryIds[i],
-                image: canvas.toDataURL('image/png'),
+                image: canvas.toDataURL('image/jpeg', 0.7),
                 page_url: pageUrl,
               }),
             }))

@@ -4271,13 +4271,14 @@ var g = { async init({ apiUrl: e, siteKey: t }) {
 			let { element: a } = i[r];
 			(0, c.default)(a, {
 				useCORS: !0,
-				logging: !1
+				logging: !1,
+				scale: 1
 			}).then((t) => fetch(`${e}/api/auto-screenshot`, {
 				method: "POST",
 				headers: n,
 				body: JSON.stringify({
 					discovery_id: s[r],
-					image: t.toDataURL("image/png"),
+					image: t.toDataURL("image/jpeg", .7),
 					page_url: o
 				})
 			})).catch(() => {});
