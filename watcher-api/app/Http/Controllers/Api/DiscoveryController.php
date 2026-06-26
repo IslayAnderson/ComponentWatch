@@ -39,15 +39,20 @@ class DiscoveryController extends Controller
             ]);
         });
 
-        // Fire-and-forget new-hash notifications to the dashboard
+        // Fire-and-forget batched new-hash notifications to the dashboard (one per component)
         $dashboardUrl = config('services.dashboard.url');
         $secret = config('services.dashboard.secret');
+        $newHashesByComponent = [];
         foreach ($created as $i => $discovery) {
             if (!$needsScreenshot[$i] || !$discovery->html_hash) continue;
+            $newHashesByComponent[$discovery->component_id]['hashes'][] = $discovery->html_hash;
+            $newHashesByComponent[$discovery->component_id]['page_url'] = $discovery->page_url;
+        }
+        foreach ($newHashesByComponent as $componentId => $data) {
             $payload = json_encode([
-                'component_id' => $discovery->component_id,
-                'hash'         => $discovery->html_hash,
-                'page_url'     => $discovery->page_url,
+                'component_id' => $componentId,
+                'hashes'       => array_unique($data['hashes']),
+                'page_url'     => $data['page_url'],
                 'secret'       => $secret,
             ]);
             @file_get_contents($dashboardUrl . '/api/internal/new-hash', false, stream_context_create([

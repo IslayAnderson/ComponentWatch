@@ -15,7 +15,8 @@ class NewHashNotificationController extends Controller
     {
         $request->validate([
             'component_id' => 'required|integer|exists:components,id',
-            'hash'         => 'required|string',
+            'hashes'       => 'required|array|min:1',
+            'hashes.*'     => 'string',
             'page_url'     => 'required|string',
             'secret'       => 'required|string',
         ]);
@@ -26,18 +27,8 @@ class NewHashNotificationController extends Controller
 
         $component = Component::with('site.user')->findOrFail($request->component_id);
 
-        file_put_contents(storage_path('logs/mail-debug.log'),
-            date('Y-m-d H:i:s') . " Sending to: " . $component->site->user->email . " hash: " . $request->hash . "\n",
-            FILE_APPEND
-        );
-
         Mail::to($component->site->user->email)
-            ->send(new NewHashDetected($component, $request->hash, $request->page_url));
-
-        file_put_contents(storage_path('logs/mail-debug.log'),
-            date('Y-m-d H:i:s') . " Mail sent.\n",
-            FILE_APPEND
-        );
+            ->send(new NewHashDetected($component, $request->hashes, $request->page_url));
 
         return response()->json(['status' => 'sent']);
     }

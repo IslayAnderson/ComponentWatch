@@ -15,15 +15,18 @@ class NewHashDetected extends Mailable
 
     public function __construct(
         public Component $component,
-        public string $hash,
+        public array $hashes,
         public string $pageUrl,
     ) {}
 
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: "New HTML variant detected: {$this->component->name}",
-        );
+        $count = count($this->hashes);
+        $subject = $count === 1
+            ? "New HTML variant detected: {$this->component->name}"
+            : "{$count} new HTML variants detected: {$this->component->name}";
+
+        return new Envelope(subject: $subject);
     }
 
     public function content(): Content

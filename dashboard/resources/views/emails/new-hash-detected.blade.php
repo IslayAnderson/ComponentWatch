@@ -2,9 +2,11 @@
 <html>
 <head><meta charset="utf-8"></head>
 <body style="font-family: sans-serif; color: #374151; padding: 32px; max-width: 600px;">
-    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">New HTML variant detected</h2>
+    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">
+        {{ count($hashes) === 1 ? 'New HTML variant detected' : count($hashes) . ' new HTML variants detected' }}
+    </h2>
     <p style="color: #6b7280; margin-bottom: 24px;">
-        A new HTML structure was discovered for <strong>{{ $component->name }}</strong> on <strong>{{ $component->site->name }}</strong>.
+        {{ count($hashes) === 1 ? 'A new HTML structure was' : 'New HTML structures were' }} discovered for <strong>{{ $component->name }}</strong> on <strong>{{ $component->site->name }}</strong>.
     </p>
 
     <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 24px;">
@@ -13,8 +15,12 @@
             <td style="padding: 8px 0; font-weight: 500;">{{ $component->name }}</td>
         </tr>
         <tr>
-            <td style="padding: 8px 0; color: #6b7280;">Hash</td>
-            <td style="padding: 8px 0; font-family: monospace;">{{ $hash }}</td>
+            <td style="padding: 8px 0; color: #6b7280; vertical-align: top;">{{ count($hashes) === 1 ? 'Hash' : 'Hashes' }}</td>
+            <td style="padding: 8px 0;">
+                @foreach($hashes as $hash)
+                    <div style="font-family: monospace; margin-bottom: 2px;">{{ $hash }}</div>
+                @endforeach
+            </td>
         </tr>
         <tr>
             <td style="padding: 8px 0; color: #6b7280;">Page</td>
