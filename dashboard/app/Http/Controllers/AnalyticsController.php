@@ -73,6 +73,7 @@ class AnalyticsController extends Controller
 
         $screenshots = Screenshot::where('component_id', $component->id)
             ->latest()
+            ->limit(3)
             ->get()
             ->map(fn ($s) => [
                 'id' => $s->id,
