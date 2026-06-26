@@ -6,6 +6,7 @@ cd "$(dirname "$0")"
 PHP=/usr/bin/php8.1
 $PHP /usr/local/bin/composer install --no-dev --optimize-autoloader
 
+export PATH="$HOME/.nodenv/shims:$HOME/.nodenv/bin:$PATH"
 npm ci
 npm run build
 
