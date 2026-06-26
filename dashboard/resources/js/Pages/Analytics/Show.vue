@@ -14,6 +14,7 @@ const props = defineProps({
 })
 
 const takingScreenshot = ref(false)
+const lightbox = ref(null)
 
 function formatMs(ms) {
     if (ms === null) return '—'
@@ -135,10 +136,16 @@ async function requestScreenshot() {
                     <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">HTML Variants</h3>
                     <p class="mb-3 text-xs text-gray-400">Each unique hash represents a distinct HTML structure for this component.</p>
                     <div class="space-y-2">
-                        <div v-for="h in html_hashes" :key="h.hash" class="rounded border border-gray-200 bg-gray-50 px-4 py-3">
+                        <div v-for="h in html_hashes" :key="h.hash"
+                            class="rounded border border-gray-200 bg-gray-50 px-4 py-3"
+                            :class="h.screenshot_url ? 'cursor-pointer hover:border-indigo-300 hover:bg-indigo-50 transition-colors' : ''"
+                            @click="h.screenshot_url && (lightbox = h.screenshot_url)">
                             <div class="flex items-center justify-between">
                                 <code class="font-mono text-xs text-gray-500">{{ h.hash }}</code>
-                                <span class="text-sm text-gray-600">{{ h.count }} {{ h.count === 1 ? 'instance' : 'instances' }}</span>
+                                <div class="flex items-center gap-3">
+                                    <span v-if="h.screenshot_url" class="text-xs text-indigo-500">View screenshot →</span>
+                                    <span class="text-sm text-gray-600">{{ h.count }} {{ h.count === 1 ? 'instance' : 'instances' }}</span>
+                                </div>
                             </div>
                             <div class="mt-1 flex flex-wrap gap-1">
                                 <span v-for="page in h.pages" :key="page" class="rounded bg-gray-200 px-2 py-0.5 font-mono text-xs text-gray-600">{{ page }}</span>
@@ -146,6 +153,14 @@ async function requestScreenshot() {
                         </div>
                     </div>
                 </section>
+
+                <!-- Lightbox -->
+                <div v-if="lightbox" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" @click.self="lightbox = null">
+                    <div class="relative max-h-full max-w-4xl overflow-auto rounded-lg bg-white shadow-xl">
+                        <button @click="lightbox = null" class="absolute right-2 top-2 rounded-full bg-white/80 px-2 py-1 text-xs text-gray-600 hover:bg-white">✕ close</button>
+                        <img :src="lightbox" class="block max-h-[85vh] w-auto rounded-lg" />
+                    </div>
+                </div>
 
                 <!-- No data state -->
                 <div v-if="stats.total_discoveries === 0" class="rounded border border-dashed border-gray-300 p-12 text-center text-gray-400">

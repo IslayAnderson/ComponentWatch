@@ -11,4 +11,9 @@ class Screenshot extends Model
     {
         return $this->belongsTo(Component::class);
     }
+
+    public function discovery(): BelongsTo
+    {
+        return $this->belongsTo(Discovery::class);
+    }
 }

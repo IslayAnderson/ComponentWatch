@@ -2,9 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "test-page",
+      "name": "screen-blank-test",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["vite", "--port", "5174", "--open", "test.html"],
+      "runtimeArgs": ["vite", "--port", "5174", "test-screen-blank.html"],
       "port": 5174
     }
   ]

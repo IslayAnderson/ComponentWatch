@@ -1,3 +1,4 @@
+import html2canvas from 'html2canvas'
 import { discover } from './discover.js'
 import { Analytics } from './analytics.js'
 import { handleScreenshotRequest } from './screenshot.js'
@@ -60,6 +61,24 @@ const ComponentWatcher = {
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = await res.json()
       discoveryIds = data.discovery_ids
+      // Fire-and-forget auto-screenshots for new hash instances
+      if (data.needs_screenshot) {
+        data.needs_screenshot.forEach((needed, i) => {
+          if (!needed) return
+          const { element } = found[i]
+          html2canvas(element, { useCORS: true, logging: false })
+            .then(canvas => fetch(`${apiUrl}/api/auto-screenshot`, {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({
+                discovery_id: discoveryIds[i],
+                image: canvas.toDataURL('image/png'),
+                page_url: window.location.href,
+              }),
+            }))
+            .catch(() => {})
+        })
+      }
     } catch (e) {
       console.error('[ComponentWatcher] Failed to report discoveries', e)
       return

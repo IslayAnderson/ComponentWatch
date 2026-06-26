@@ -5,140 +5,10 @@ var e = Object.create, t = Object.defineProperty, n = Object.getOwnPropertyDescr
 		enumerable: !(s = n(i, d)) || s.enumerable
 	});
 	return e;
-}, c = (n, r, a) => (a = n == null ? {} : e(i(n)), s(r || !n || !n.__esModule ? t(a, "default", {
+}, c = /* @__PURE__ */ ((n, r, a) => (a = n == null ? {} : e(i(n)), s(r || !n || !n.__esModule ? t(a, "default", {
 	value: n,
 	enumerable: !0
-}) : a, n));
-//#endregion
-//#region src/discover.js
-function l(e) {
-	let t = [];
-	for (let n of e) {
-		let e = [...n.macros].sort((e, t) => e.priority - t.priority);
-		for (let r of e) {
-			let e = u(r);
-			for (let r = 0; r < e.length; r++) t.push({
-				component: n,
-				element: e[r],
-				htmlHash: d(e[r]),
-				stackPosition: r
-			});
-			if (e.length > 0) break;
-		}
-	}
-	return t;
-}
-function u(e) {
-	try {
-		if (e.type === "id") {
-			let t = document.getElementById(e.value.replace(/^#/, ""));
-			return t ? [t] : [];
-		}
-		if (e.type === "css") return Array.from(document.querySelectorAll(e.value));
-		if (e.type === "js") {
-			let t = Function(`return (${e.value})`)();
-			return t instanceof Element ? [t] : t instanceof NodeList || Array.isArray(t) ? Array.from(t) : [];
-		}
-	} catch (t) {
-		console.warn(`[ComponentWatcher] Macro failed (${e.type}: ${e.value})`, t);
-	}
-	return [];
-}
-function d(e) {
-	let t = e.cloneNode(!0);
-	f(t);
-	let n = t.outerHTML, r = 5381;
-	for (let e = 0; e < n.length; e++) r = (r << 5) + r ^ n.charCodeAt(e), r >>>= 0;
-	return r.toString(16);
-}
-function f(e) {
-	if (e.removeAttribute("id"), e.hasAttribute("class")) {
-		let t = e.className.trim().split(/\s+/).sort().join(" ");
-		e.setAttribute("class", t);
-	}
-	for (let t of [...e.attributes]) t.name.startsWith("data-") && /\d{10,}/.test(t.value) && e.removeAttribute(t.name);
-	for (let t of e.children) f(t);
-}
-//#endregion
-//#region src/analytics.js
-var p = class {
-	#e;
-	#t;
-	#n = /* @__PURE__ */ new Map();
-	#r = /* @__PURE__ */ new Set();
-	#i = /* @__PURE__ */ new Set();
-	#a = [];
-	#o = null;
-	#s = null;
-	#c = null;
-	constructor(e, t) {
-		this.#e = e, this.#t = t;
-	}
-	attach(e) {
-		for (let { element: t, discoveryId: n, screenBlank: r } of e) this.#n.set(t, n), r && this.#r.add(t), this.#l(t);
-		this.#u(), this.#d(), this.#o = setInterval(() => this.#m(), 5e3), document.addEventListener("visibilitychange", () => {
-			document.visibilityState === "hidden" && this.#m();
-		});
-	}
-	#l(e) {
-		e.addEventListener("click", () => this.#p(e, "click")), e.addEventListener("mouseover", () => this.#p(e, "mouseover"));
-		let t = null;
-		e.addEventListener("mouseenter", () => {
-			t = Date.now();
-		}), e.addEventListener("mouseleave", () => {
-			t !== null && (this.#p(e, "hover_time", { ms: Date.now() - t }), t = null);
-		});
-	}
-	#u() {
-		this.#s = new IntersectionObserver((e) => {
-			for (let t of e) t.isIntersecting ? this.#i.add(t.target) : this.#i.delete(t.target);
-		}, { threshold: .1 });
-		for (let e of this.#n.keys()) this.#s.observe(e);
-	}
-	#d() {
-		this.#c = (e) => {
-			let t = e.metaKey && e.shiftKey && [
-				"3",
-				"4",
-				"5"
-			].includes(e.key), n = e.key === "PrintScreen";
-			if (!t && !n) return;
-			let r = e.key === "PrintScreen" ? "PrintScreen" : `Cmd+Shift+${e.key}`, i = !1;
-			for (let e of this.#i) this.#p(e, "screenshot", { shortcut: r }), this.#r.has(e) && (i = !0);
-			i && this.#f();
-		}, document.addEventListener("keydown", this.#c);
-	}
-	#f() {
-		let e = document.createElement("div");
-		e.style.cssText = "position:fixed;inset:0;background:#fff;z-index:2147483647;pointer-events:none", document.body.appendChild(e), setTimeout(() => e.remove(), 800);
-	}
-	#p(e, t, n = null) {
-		let r = this.#n.get(e);
-		r && this.#a.push({
-			discovery_id: r,
-			type: t,
-			payload: n,
-			occurred_at: (/* @__PURE__ */ new Date()).toISOString()
-		});
-	}
-	async #m() {
-		if (this.#a.length === 0) return;
-		let e = this.#a.splice(0);
-		try {
-			await fetch(`${this.#e}/api/events`, {
-				method: "POST",
-				headers: this.#t,
-				body: JSON.stringify({ events: e }),
-				keepalive: !0
-			});
-		} catch (t) {
-			this.#a.unshift(...e), console.warn("[ComponentWatcher] Event flush failed", t);
-		}
-	}
-	destroy() {
-		clearInterval(this.#o), this.#s?.disconnect(), this.#c && document.removeEventListener("keydown", this.#c), this.#m();
-	}
-}, m = /* @__PURE__ */ c((/* @__PURE__ */ o(((e, t) => {
+}) : a, n)))((/* @__PURE__ */ o(((e, t) => {
 	(function(n, r) {
 		typeof e == "object" && t !== void 0 ? t.exports = r() : typeof define == "function" && define.amd ? define(r) : (n = typeof globalThis < "u" ? globalThis : n || self, n.html2canvas = r());
 	})(e, (function() {
@@ -4159,7 +4029,137 @@ var p = class {
 		return Dl;
 	}));
 })))(), 1);
-async function h(e, t) {
+function l(e) {
+	let t = [];
+	for (let n of e) {
+		let e = [...n.macros].sort((e, t) => e.priority - t.priority);
+		for (let r of e) {
+			let e = u(r);
+			for (let r = 0; r < e.length; r++) t.push({
+				component: n,
+				element: e[r],
+				htmlHash: d(e[r]),
+				stackPosition: r
+			});
+			if (e.length > 0) break;
+		}
+	}
+	return t;
+}
+function u(e) {
+	try {
+		if (e.type === "id") {
+			let t = document.getElementById(e.value.replace(/^#/, ""));
+			return t ? [t] : [];
+		}
+		if (e.type === "css") return Array.from(document.querySelectorAll(e.value));
+		if (e.type === "js") {
+			let t = Function(`return (${e.value})`)();
+			return t instanceof Element ? [t] : t instanceof NodeList || Array.isArray(t) ? Array.from(t) : [];
+		}
+	} catch (t) {
+		console.warn(`[ComponentWatcher] Macro failed (${e.type}: ${e.value})`, t);
+	}
+	return [];
+}
+function d(e) {
+	let t = e.cloneNode(!0);
+	f(t);
+	let n = t.outerHTML, r = 5381;
+	for (let e = 0; e < n.length; e++) r = (r << 5) + r ^ n.charCodeAt(e), r >>>= 0;
+	return r.toString(16);
+}
+function f(e) {
+	if (e.removeAttribute("id"), e.hasAttribute("class")) {
+		let t = e.className.trim().split(/\s+/).sort().join(" ");
+		e.setAttribute("class", t);
+	}
+	for (let t of [...e.attributes]) t.name.startsWith("data-") && /\d{10,}/.test(t.value) && e.removeAttribute(t.name);
+	for (let t of e.children) f(t);
+}
+//#endregion
+//#region src/analytics.js
+var p = class {
+	#e;
+	#t;
+	#n = /* @__PURE__ */ new Map();
+	#r = /* @__PURE__ */ new Set();
+	#i = /* @__PURE__ */ new Set();
+	#a = [];
+	#o = null;
+	#s = null;
+	#c = null;
+	constructor(e, t) {
+		this.#e = e, this.#t = t;
+	}
+	attach(e) {
+		for (let { element: t, discoveryId: n, screenBlank: r } of e) this.#n.set(t, n), r && this.#r.add(t), this.#l(t);
+		this.#u(), this.#d(), this.#o = setInterval(() => this.#m(), 5e3), document.addEventListener("visibilitychange", () => {
+			document.visibilityState === "hidden" && this.#m();
+		});
+	}
+	#l(e) {
+		e.addEventListener("click", () => this.#p(e, "click")), e.addEventListener("mouseover", () => this.#p(e, "mouseover"));
+		let t = null;
+		e.addEventListener("mouseenter", () => {
+			t = Date.now();
+		}), e.addEventListener("mouseleave", () => {
+			t !== null && (this.#p(e, "hover_time", { ms: Date.now() - t }), t = null);
+		});
+	}
+	#u() {
+		this.#s = new IntersectionObserver((e) => {
+			for (let t of e) t.isIntersecting ? this.#i.add(t.target) : this.#i.delete(t.target);
+		}, { threshold: .1 });
+		for (let e of this.#n.keys()) this.#s.observe(e);
+	}
+	#d() {
+		this.#c = (e) => {
+			let t = e.metaKey && e.shiftKey && [
+				"3",
+				"4",
+				"5"
+			].includes(e.key), n = e.key === "PrintScreen";
+			if (!t && !n) return;
+			let r = e.key === "PrintScreen" ? "PrintScreen" : `Cmd+Shift+${e.key}`, i = !1;
+			for (let e of this.#i) this.#p(e, "screenshot", { shortcut: r }), this.#r.has(e) && (i = !0);
+			i && this.#f();
+		}, document.addEventListener("keydown", this.#c);
+	}
+	#f() {
+		let e = document.createElement("div");
+		e.style.cssText = "position:fixed;inset:0;background:#fff;z-index:2147483647;pointer-events:none", document.body.appendChild(e), setTimeout(() => e.remove(), 800);
+	}
+	#p(e, t, n = null) {
+		let r = this.#n.get(e);
+		r && this.#a.push({
+			discovery_id: r,
+			type: t,
+			payload: n,
+			occurred_at: (/* @__PURE__ */ new Date()).toISOString()
+		});
+	}
+	async #m() {
+		if (this.#a.length === 0) return;
+		let e = this.#a.splice(0);
+		try {
+			await fetch(`${this.#e}/api/events`, {
+				method: "POST",
+				headers: this.#t,
+				body: JSON.stringify({ events: e }),
+				keepalive: !0
+			});
+		} catch (t) {
+			this.#a.unshift(...e), console.warn("[ComponentWatcher] Event flush failed", t);
+		}
+	}
+	destroy() {
+		clearInterval(this.#o), this.#s?.disconnect(), this.#c && document.removeEventListener("keydown", this.#c), this.#m();
+	}
+};
+//#endregion
+//#region src/screenshot.js
+async function m(e, t) {
 	let n = new URLSearchParams(window.location.search).get("cw_screenshot");
 	if (!n) return;
 	let r;
@@ -4174,7 +4174,7 @@ async function h(e, t) {
 		console.error("[ComponentWatcher] Screenshot validation failed", e);
 		return;
 	}
-	let i = g(r.macros);
+	let i = h(r.macros);
 	if (!i) {
 		console.warn(`[ComponentWatcher] Screenshot: no element found for component "${r.name}"`);
 		return;
@@ -4182,7 +4182,7 @@ async function h(e, t) {
 	await new Promise((e) => setTimeout(e, 500));
 	let a;
 	try {
-		a = (await (0, m.default)(i, {
+		a = (await (0, c.default)(i, {
 			useCORS: !0,
 			logging: !1
 		})).toDataURL("image/png");
@@ -4209,7 +4209,7 @@ async function h(e, t) {
 	}
 	console.info(`[ComponentWatcher] Screenshot captured for "${r.name}".`);
 }
-function g(e) {
+function h(e) {
 	let t = [...e].sort((e, t) => e.priority - t.priority);
 	for (let e of t) try {
 		if (e.type === "id") {
@@ -4229,8 +4229,8 @@ function g(e) {
 }
 //#endregion
 //#region src/index.js
-var _ = { async init({ apiUrl: e, siteKey: t }) {
-	await h(e, t);
+var g = { async init({ apiUrl: e, siteKey: t }) {
+	await m(e, t);
 	let n = {
 		"Content-Type": "application/json",
 		"X-Site-Key": t
@@ -4262,7 +4262,23 @@ var _ = { async init({ apiUrl: e, siteKey: t }) {
 			})
 		});
 		if (!t.ok) throw Error(`HTTP ${t.status}`);
-		o = (await t.json()).discovery_ids;
+		let r = await t.json();
+		o = r.discovery_ids, r.needs_screenshot && r.needs_screenshot.forEach((t, r) => {
+			if (!t) return;
+			let { element: a } = i[r];
+			(0, c.default)(a, {
+				useCORS: !0,
+				logging: !1
+			}).then((t) => fetch(`${e}/api/auto-screenshot`, {
+				method: "POST",
+				headers: n,
+				body: JSON.stringify({
+					discovery_id: o[r],
+					image: t.toDataURL("image/png"),
+					page_url: window.location.href
+				})
+			})).catch(() => {});
+		});
 	} catch (e) {
 		console.error("[ComponentWatcher] Failed to report discoveries", e);
 		return;
@@ -4274,4 +4290,4 @@ var _ = { async init({ apiUrl: e, siteKey: t }) {
 	})));
 } };
 //#endregion
-export { _ as default };
+export { g as default };

@@ -20,14 +20,26 @@ class DiscoveryController extends Controller
             'discoveries.*.stack_position' => 'nullable|integer',
         ]);
 
-        $created = collect($validated['discoveries'])->map(fn ($d) => Discovery::create([
-            'component_id' => $d['component_id'],
-            'page_url' => $d['page_url'],
-            'html_hash' => $d['html_hash'] ?? null,
-            'stack_position' => $d['stack_position'] ?? null,
-            'session_id' => $validated['session_id'],
-        ]));
+        $needsScreenshot = [];
+        $created = collect($validated['discoveries'])->map(function ($d) use ($validated, &$needsScreenshot) {
+            $hash = $d['html_hash'] ?? null;
+            $isNew = $hash && !Discovery::where('component_id', $d['component_id'])
+                ->where('html_hash', $hash)
+                ->exists();
+            $needsScreenshot[] = $isNew;
 
-        return response()->json(['discovery_ids' => $created->pluck('id')], 201);
+            return Discovery::create([
+                'component_id' => $d['component_id'],
+                'page_url' => $d['page_url'],
+                'html_hash' => $hash,
+                'stack_position' => $d['stack_position'] ?? null,
+                'session_id' => $validated['session_id'],
+            ]);
+        });
+
+        return response()->json([
+            'discovery_ids' => $created->pluck('id'),
+            'needs_screenshot' => $needsScreenshot,
+        ], 201);
     }
 }

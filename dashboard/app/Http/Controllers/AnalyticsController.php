@@ -35,15 +35,29 @@ class AnalyticsController extends Controller
             ->get()
             ->avg(fn ($e) => json_decode($e->payload, true)['ms'] ?? 0);
 
+        $screenshotsByHash = Screenshot::whereIn('discovery_id', $discoveryIds)
+            ->with('discovery')
+            ->get()
+            ->keyBy(fn ($s) => $s->discovery?->html_hash);
+
         $htmlHashes = $discoveries
             ->whereNotNull('html_hash')
             ->groupBy('html_hash')
-            ->map(fn ($group) => [
-                'hash' => $group->first()->html_hash,
-                'count' => $group->count(),
-                'pages' => $group->pluck('page_url')->unique()->values(),
-            ])
+            ->map(function ($group) use ($screenshotsByHash, $watcherApiUrl, $component) {
+                $hash = $group->first()->html_hash;
+                $screenshot = $screenshotsByHash->get($hash);
+                return [
+                    'hash' => $hash,
+                    'count' => $group->count(),
+                    'pages' => $group->pluck('page_url')->unique()->values(),
+                    'screenshot_url' => $screenshot
+                        ? $watcherApiUrl . '/api/screenshot/image/' . $component->id . '/' . basename($screenshot->path)
+                        : null,
+                ];
+            })
             ->values();
+
+        $watcherApiUrl = config('services.watcher_api.url', 'http://localhost:8001');
 
         $pageBreakdown = $discoveries
             ->groupBy('page_url')
@@ -56,8 +70,6 @@ class AnalyticsController extends Controller
                     ->count(),
             ])
             ->values();
-
-        $watcherApiUrl = config('services.watcher_api.url', 'http://localhost:8001');
 
         $screenshots = Screenshot::where('component_id', $component->id)
             ->latest()

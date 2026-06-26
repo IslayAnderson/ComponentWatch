@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Screen Blank Test</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f3f4f6; }
+    #feature-box {
+      background: white;
+      border: 2px solid #6366f1;
+      border-radius: 8px;
+      padding: 2rem;
+      max-width: 480px;
+      margin: 2rem auto;
+    }
+    h2 { color: #4338ca; margin: 0 0 1rem; }
+    p  { color: #374151; font-size: 0.95rem; }
+    .badge {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #3730a3;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-top: 0.5rem;
+    }
+    .log {
+      margin-top: 2rem;
+      background: #1e1b4b;
+      color: #a5b4fc;
+      font-family: monospace;
+      font-size: 0.8rem;
+      padding: 1rem;
+      border-radius: 6px;
+      min-height: 80px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+      white-space: pre-wrap;
+    }
+    .instructions {
+      text-align: center;
+      color: #6b7280;
+      font-size: 0.875rem;
+      max-width: 480px;
+      margin: 0 auto 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <p class="instructions">
+    Press <strong>Cmd+Shift+3</strong> (Mac) or <strong>PrintScreen</strong> (Windows).<br>
+    The screen should flash white for ~800ms.
+  </p>
+
+  <div id="feature-box">
+    <h2>Feature Component</h2>
+    <p>This component is tracked by ComponentWatch with <strong>screen blanking enabled</strong>.</p>
+    <span class="badge">screen_blank: true</span>
+  </div>
+
+  <div class="log" id="log">Waiting for ComponentWatcher to initialise…
+</div>
+
+  <script src="/dist/component-watcher.umd.cjs"></script>
+  <script>
+    const log = document.getElementById('log')
+    const _warn = console.warn.bind(console)
+    const _log  = console.log.bind(console)
+    console.warn = (...a) => { _warn(...a); log.textContent += '[warn] ' + a.join(' ') + '\n' }
+    console.log  = (...a) => { _log(...a);  log.textContent += '[log]  ' + a.join(' ') + '\n' }
+
+    // Patch fetch to log API calls
+    const _fetch = window.fetch
+    window.fetch = async (...args) => {
+      const url = typeof args[0] === 'string' ? args[0] : args[0].url
+      log.textContent += '[fetch] ' + url + '\n'
+      const res = await _fetch(...args)
+      log.textContent += '[resp]  ' + url + ' → ' + res.status + '\n'
+      return res
+    }
+
+    // Patch overlay insertion to confirm it fires
+    const _append = document.body.appendChild.bind(document.body)
+    document.body.appendChild = (el) => {
+      if (el.style && el.style.zIndex === '2147483647') {
+        log.textContent += '[BLANK] overlay injected ✓\n'
+        el.addEventListener('transitionend', () => {})
+        // colour it pink so it's unmissable in the test
+        el.style.background = 'rgba(99,102,241,0.85)'
+      }
+      return _append(el)
+    }
+
+    ComponentWatcher.init({
+      apiUrl: 'http://localhost:8001',
+      siteKey: '7d5aaa9a-17ce-4aad-9331-1e6ca20bb8e5',
+    }).then(() => {
+      log.textContent += '[ready] Analytics attached — press the screenshot shortcut!\n'
+    })
+  </script>
+</body>
+</html>

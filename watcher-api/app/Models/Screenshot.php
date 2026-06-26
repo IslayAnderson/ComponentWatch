@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Screenshot extends Model
 {
-    protected $fillable = ['component_id', 'path', 'page_url'];
+    protected $fillable = ['component_id', 'discovery_id', 'path', 'page_url'];
 
     public function component(): BelongsTo
     {
         return $this->belongsTo(Component::class);
+    }
+
+    public function discovery(): BelongsTo
+    {
+        return $this->belongsTo(Discovery::class);
     }
 }
