@@ -35,6 +35,23 @@ class SiteController extends Controller
         return redirect()->route('sites.index')->with('success', 'Site created.');
     }
 
+    public function edit(Site $site): Response
+    {
+        Gate::authorize('view', $site);
+        return Inertia::render('Sites/Edit', ['site' => $site]);
+    }
+
+    public function update(Request $request, Site $site): RedirectResponse
+    {
+        Gate::authorize('view', $site);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'url'  => 'required|url|max:255',
+        ]);
+        $site->update($validated);
+        return redirect()->route('sites.index')->with('success', 'Site updated.');
+    }
+
     public function destroy(Site $site): RedirectResponse
     {
         Gate::authorize('view', $site);

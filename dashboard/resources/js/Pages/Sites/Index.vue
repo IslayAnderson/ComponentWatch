@@ -67,7 +67,10 @@ function deleteSite(id) {
                                 <code class="truncate rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs text-gray-500">
                                     {{ site.api_key }}
                                 </code>
-                                <button @click="deleteSite(site.id)" class="shrink-0 text-xs text-red-400 hover:text-red-600">Delete</button>
+                                <div class="flex shrink-0 gap-3">
+                                    <Link :href="route('sites.edit', site.id)" class="text-xs text-gray-400 hover:text-gray-600">Edit</Link>
+                                    <button @click="deleteSite(site.id)" class="text-xs text-red-400 hover:text-red-600">Delete</button>
+                                </div>
                             </div>
                         </div>
                     </div>
