@@ -49,6 +49,7 @@ function submit() {
                         <div>
                             <p class="text-sm font-medium text-gray-700">Screen Blanking</p>
                             <p class="text-xs text-gray-400 mt-0.5">Briefly blank the screen when a user takes a screenshot with this component visible.</p>
+                            <p class="text-xs text-amber-500 mt-1">⚠ Only works on Windows (PrintScreen). macOS intercepts screenshot shortcuts before the browser can react.</p>
                         </div>
                         <button type="button" @click="form.screen_blank = !form.screen_blank"
                             :class="form.screen_blank ? 'bg-indigo-600' : 'bg-gray-200'"
