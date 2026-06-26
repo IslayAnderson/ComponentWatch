@@ -39,6 +39,28 @@ class DiscoveryController extends Controller
             ]);
         });
 
+        // Fire-and-forget new-hash notifications to the dashboard
+        $dashboardUrl = config('services.dashboard.url');
+        $secret = config('services.dashboard.secret');
+        foreach ($created as $i => $discovery) {
+            if (!$needsScreenshot[$i] || !$discovery->html_hash) continue;
+            $payload = json_encode([
+                'component_id' => $discovery->component_id,
+                'hash'         => $discovery->html_hash,
+                'page_url'     => $discovery->page_url,
+                'secret'       => $secret,
+            ]);
+            @file_get_contents($dashboardUrl . '/api/internal/new-hash', false, stream_context_create([
+                'http' => [
+                    'method'  => 'POST',
+                    'header'  => "Content-Type: application/json\r\nContent-Length: " . strlen($payload),
+                    'content' => $payload,
+                    'timeout' => 3,
+                    'ignore_errors' => true,
+                ],
+            ]));
+        }
+
         return response()->json([
             'discovery_ids' => $created->pluck('id'),
             'needs_screenshot' => $needsScreenshot,

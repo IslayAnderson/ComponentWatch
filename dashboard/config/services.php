@@ -32,6 +32,10 @@ return [
         'url' => env('WATCHER_API_URL', 'http://localhost:8001'),
     ],
 
+    'internal' => [
+        'secret' => env('INTERNAL_SECRET'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
