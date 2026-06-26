@@ -37,7 +37,7 @@ function deleteSite(id) {
                     <div v-for="site in sites" :key="site.id"
                         class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
                         <!-- Screenshot thumbnail -->
-                        <Link :href="route('sites.components.index', site.id)" class="block overflow-hidden bg-gray-100" style="height:160px">
+                        <Link :href="route('sites.components.index', site.id)" class="block overflow-hidden bg-gray-100" style="aspect-ratio:4/3">
                             <img
                                 :src="`https://s.wordpress.com/mshots/v1/${encodeURIComponent(site.url)}?w=640&h=320`"
                                 :alt="site.name"
