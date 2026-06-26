@@ -72,15 +72,23 @@ const ComponentWatcher = {
           if (!needed) return
           const { element } = found[i]
           html2canvas(element, { useCORS: true, logging: false, scale: 1 })
-            .then(canvas => fetch(`${apiUrl}/api/auto-screenshot`, {
-              method: 'POST',
-              headers,
-              body: JSON.stringify({
-                discovery_id: discoveryIds[i],
-                image: canvas.toDataURL('image/jpeg', 0.7),
-                page_url: pageUrl,
-              }),
-            }))
+            .then(canvas => {
+              const maxW = 800
+              let w = canvas.width, h = canvas.height
+              if (w > maxW) { h = Math.round(h * maxW / w); w = maxW }
+              const out = document.createElement('canvas')
+              out.width = w; out.height = h
+              out.getContext('2d').drawImage(canvas, 0, 0, w, h)
+              return fetch(`${apiUrl}/api/auto-screenshot`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                  discovery_id: discoveryIds[i],
+                  image: out.toDataURL('image/jpeg', 0.7),
+                  page_url: pageUrl,
+                }),
+              })
+            })
             .catch(() => {})
         })
       }

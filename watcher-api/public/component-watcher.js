@@ -4273,15 +4273,20 @@ var g = { async init({ apiUrl: e, siteKey: t }) {
 				useCORS: !0,
 				logging: !1,
 				scale: 1
-			}).then((t) => fetch(`${e}/api/auto-screenshot`, {
-				method: "POST",
-				headers: n,
-				body: JSON.stringify({
-					discovery_id: s[r],
-					image: t.toDataURL("image/jpeg", .7),
-					page_url: o
-				})
-			})).catch(() => {});
+			}).then((t) => {
+				let i = t.width, a = t.height;
+				i > 800 && (a = Math.round(a * 800 / i), i = 800);
+				let c = document.createElement("canvas");
+				return c.width = i, c.height = a, c.getContext("2d").drawImage(t, 0, 0, i, a), fetch(`${e}/api/auto-screenshot`, {
+					method: "POST",
+					headers: n,
+					body: JSON.stringify({
+						discovery_id: s[r],
+						image: c.toDataURL("image/jpeg", .7),
+						page_url: o
+					})
+				});
+			}).catch(() => {});
 		});
 	} catch (e) {
 		console.error("[ComponentWatcher] Failed to report discoveries", e);
