@@ -1,0 +1,21 @@
+# Laravel
+vendor/
+node_modules/
+.env
+storage/*.key
+storage/logs/
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+bootstrap/cache/
+public/hot
+public/build/
+*.sqlite
+*.sqlite-journal
+
+# JS library
+dist/
+js-library/node_modules/
+
+# OS
+.DS_Store

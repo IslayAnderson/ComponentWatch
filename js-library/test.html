@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><title>ComponentWatcher Test</title></head>
+<body>
+  <div class="feature">
+    <h2>My Feature Block</h2>
+    <p>Click me to test analytics.</p>
+    <button>Click me</button>
+  </div>
+
+  <script type="module">
+    import ComponentWatcher from './dist/component-watcher.js'
+
+    ComponentWatcher.init({
+      apiUrl: 'http://localhost:8001',
+      clientId: '019f044c-1bb7-71d3-a61c-6cf3aa5cf56b',
+      clientSecret: 'gSZqsAeJgadZhG4znmd0eq130dCDnygSGCMkbIuF',
+    }).then(() => {
+      console.log('[test] ComponentWatcher initialised')
+    })
+  </script>
+</body>
+</html>
