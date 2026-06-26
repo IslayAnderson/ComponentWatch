@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Discovery;
+use App\Models\Screenshot;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -23,9 +24,10 @@ class DiscoveryController extends Controller
         $needsScreenshot = [];
         $created = collect($validated['discoveries'])->map(function ($d) use ($validated, &$needsScreenshot) {
             $hash = $d['html_hash'] ?? null;
-            $isNew = $hash && !Discovery::where('component_id', $d['component_id'])
-                ->where('html_hash', $hash)
-                ->exists();
+            $isNew = $hash && !Screenshot::whereHas('discovery', fn ($q) =>
+                $q->where('component_id', $d['component_id'])
+                  ->where('html_hash', $hash)
+            )->exists();
             $needsScreenshot[] = $isNew;
 
             return Discovery::create([
