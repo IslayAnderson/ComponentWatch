@@ -1,3 +1,0 @@
-#componentWatch
-
-##Development plan
