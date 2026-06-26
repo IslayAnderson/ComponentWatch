@@ -3,14 +3,15 @@ set -e
 
 cd "$(dirname "$0")"
 
-composer install --no-dev --optimize-autoloader
+PHP=/usr/bin/php8.1
+$PHP /usr/local/bin/composer install --no-dev --optimize-autoloader
 
 npm ci
 npm run build
 
-php artisan migrate --force
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+$PHP artisan migrate --force
+$PHP artisan config:cache
+$PHP artisan route:cache
+$PHP artisan view:cache
 
 chmod -R 775 storage bootstrap/cache
