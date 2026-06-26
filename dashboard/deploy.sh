@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 
 PHP=/usr/bin/php8.1
 $PHP /usr/local/bin/composer install --no-dev --optimize-autoloader --ignore-platform-req=php
-rm -f vendor/composer/platform_check.php
+echo '<?php' > vendor/composer/platform_check.php
 
 export PATH="$HOME/.nodenv/shims:$HOME/.nodenv/bin:$PATH"
 npm ci
