@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
-import { Head, Link } from '@inertiajs/vue3'
+import { Head, Link, router } from '@inertiajs/vue3'
+import { ref } from 'vue'
 
 const props = defineProps({
     site: Object,
@@ -8,12 +9,49 @@ const props = defineProps({
     stats: Object,
     page_breakdown: Array,
     html_hashes: Array,
+    screenshots: Array,
+    watcherApiUrl: String,
 })
+
+const takingScreenshot = ref(false)
 
 function formatMs(ms) {
     if (ms === null) return '—'
     if (ms < 1000) return `${ms}ms`
     return `${(ms / 1000).toFixed(1)}s`
+}
+
+async function requestScreenshot() {
+    takingScreenshot.value = true
+    try {
+        const res = await fetch(route('sites.components.screenshot-token', [props.site.id, props.component.id]), {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                'Accept': 'application/json',
+            },
+        })
+        const data = await res.json()
+        window.open(data.url, '_blank')
+
+        // Poll for new screenshot for up to 2 minutes
+        const start = Date.now()
+        const poll = setInterval(() => {
+            if (Date.now() - start > 120_000) {
+                clearInterval(poll)
+                takingScreenshot.value = false
+                return
+            }
+            router.reload({ only: ['screenshots'], onSuccess: () => {
+                if (props.screenshots.length > 0) {
+                    clearInterval(poll)
+                    takingScreenshot.value = false
+                }
+            }})
+        }, 3000)
+    } catch {
+        takingScreenshot.value = false
+    }
 }
 </script>
 
@@ -21,17 +59,24 @@ function formatMs(ms) {
     <Head :title="`${component.name} — Analytics`" />
     <AuthenticatedLayout>
         <template #header>
-            <div>
-                <div class="text-xs text-gray-400">
-                    <Link :href="route('sites.index')" class="hover:text-indigo-600">Sites</Link>
-                    <span class="mx-1">/</span>
-                    <Link :href="route('sites.components.index', site.id)" class="hover:text-indigo-600">{{ site.name }}</Link>
-                    <span class="mx-1">/</span>
-                    <Link :href="route('sites.components.edit', [site.id, component.id])" class="hover:text-indigo-600">{{ component.name }}</Link>
-                    <span class="mx-1">/</span>
-                    <span>Analytics</span>
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-xs text-gray-400">
+                        <Link :href="route('sites.index')" class="hover:text-indigo-600">Sites</Link>
+                        <span class="mx-1">/</span>
+                        <Link :href="route('sites.components.index', site.id)" class="hover:text-indigo-600">{{ site.name }}</Link>
+                        <span class="mx-1">/</span>
+                        <Link :href="route('sites.components.edit', [site.id, component.id])" class="hover:text-indigo-600">{{ component.name }}</Link>
+                        <span class="mx-1">/</span>
+                        <span>Analytics</span>
+                    </div>
+                    <h2 class="text-xl font-semibold text-gray-800">{{ component.name }}</h2>
                 </div>
-                <h2 class="text-xl font-semibold text-gray-800">{{ component.name }}</h2>
+                <button @click="requestScreenshot" :disabled="takingScreenshot"
+                    class="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 flex items-center gap-2">
+                    <span v-if="takingScreenshot" class="inline-block h-3 w-3 rounded-full border-2 border-gray-400 border-t-transparent animate-spin"></span>
+                    {{ takingScreenshot ? 'Waiting for screenshot…' : 'Take Screenshot' }}
+                </button>
             </div>
         </template>
 
@@ -48,6 +93,20 @@ function formatMs(ms) {
                     <Stat label="Hover Events" :value="stats.hover_time_events" />
                     <Stat label="Avg Hover Time" :value="formatMs(stats.avg_hover_ms)" />
                 </div>
+
+                <!-- Screenshots -->
+                <section v-if="screenshots.length">
+                    <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Screenshots</h3>
+                    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                        <div v-for="shot in screenshots" :key="shot.id" class="rounded border border-gray-200 overflow-hidden">
+                            <img :src="shot.image_url" class="w-full object-cover" :alt="`Screenshot from ${shot.page_url}`" />
+                            <div class="px-3 py-2 bg-gray-50 border-t border-gray-200">
+                                <p class="font-mono text-xs text-gray-500 truncate">{{ shot.page_url }}</p>
+                                <p class="text-xs text-gray-400 mt-0.5">{{ shot.created_at }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                 <!-- Page breakdown -->
                 <section v-if="page_breakdown.length">
@@ -73,7 +132,7 @@ function formatMs(ms) {
                 <!-- HTML hashes -->
                 <section v-if="html_hashes.length">
                     <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">HTML Variants</h3>
-                    <p class="mb-3 text-xs text-gray-400">Each unique hash represents a distinct HTML structure for this component. Multiple hashes indicate variants or dynamic content differences.</p>
+                    <p class="mb-3 text-xs text-gray-400">Each unique hash represents a distinct HTML structure for this component.</p>
                     <div class="space-y-2">
                         <div v-for="h in html_hashes" :key="h.hash" class="rounded border border-gray-200 bg-gray-50 px-4 py-3">
                             <div class="flex items-center justify-between">

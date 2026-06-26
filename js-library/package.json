@@ -14,5 +14,8 @@
   "type": "module",
   "devDependencies": {
     "vite": "^8.1.0"
+  },
+  "dependencies": {
+    "html2canvas": "^1.4.1"
   }
 }

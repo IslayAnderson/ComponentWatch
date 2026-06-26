@@ -1,5 +1,6 @@
 import { discover } from './discover.js'
 import { Analytics } from './analytics.js'
+import { handleScreenshotRequest } from './screenshot.js'
 
 /**
  * ComponentWatcher
@@ -15,6 +16,9 @@ import { Analytics } from './analytics.js'
  */
 const ComponentWatcher = {
   async init({ apiUrl, siteKey }) {
+    // Handle screenshot token before normal analytics flow
+    await handleScreenshotRequest(apiUrl, siteKey)
+
     const headers = {
       'Content-Type': 'application/json',
       'X-Site-Key': siteKey,

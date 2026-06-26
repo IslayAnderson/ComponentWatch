@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Component;
+use App\Models\Screenshot;
 use App\Models\Site;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -56,6 +57,18 @@ class AnalyticsController extends Controller
             ])
             ->values();
 
+        $watcherApiUrl = config('services.watcher_api.url', 'http://localhost:8001');
+
+        $screenshots = Screenshot::where('component_id', $component->id)
+            ->latest()
+            ->get()
+            ->map(fn ($s) => [
+                'id' => $s->id,
+                'page_url' => $s->page_url,
+                'created_at' => $s->created_at->toDateTimeString(),
+                'image_url' => $watcherApiUrl . '/api/screenshot/image/' . $component->id . '/' . basename($s->path),
+            ]);
+
         return Inertia::render('Analytics/Show', [
             'site' => $site,
             'component' => $component->load('macros'),
@@ -70,6 +83,8 @@ class AnalyticsController extends Controller
             ],
             'page_breakdown' => $pageBreakdown,
             'html_hashes' => $htmlHashes,
+            'screenshots' => $screenshots,
+            'watcherApiUrl' => $watcherApiUrl,
         ]);
     }
 }

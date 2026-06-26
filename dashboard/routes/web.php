@@ -3,6 +3,7 @@
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ComponentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ScreenshotTokenController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('sites.components', ComponentController::class)->except(['show']);
     Route::get('sites/{site}/components/{component}/analytics', [AnalyticsController::class, 'show'])
         ->name('sites.components.analytics');
+    Route::post('sites/{site}/components/{component}/screenshot-token', [ScreenshotTokenController::class, 'store'])
+        ->name('sites.components.screenshot-token');
 });
 
 require __DIR__.'/auth.php';
