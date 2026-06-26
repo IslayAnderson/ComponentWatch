@@ -7,7 +7,7 @@ import html2canvas from 'html2canvas'
 export async function handleScreenshotRequest(apiUrl, siteKey) {
   const params = new URLSearchParams(window.location.search)
   const token = params.get('cw_screenshot')
-  if (!token) return
+  if (!token) return false
 
   // Validate token and get component definition
   let component
@@ -59,6 +59,7 @@ export async function handleScreenshotRequest(apiUrl, siteKey) {
   }
 
   console.info(`[ComponentWatcher] Screenshot captured for "${component.name}".`)
+  return true
 }
 
 function findElement(macros) {

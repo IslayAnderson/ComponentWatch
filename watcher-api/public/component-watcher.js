@@ -4161,7 +4161,7 @@ var p = class {
 //#region src/screenshot.js
 async function m(e, t) {
 	let n = new URLSearchParams(window.location.search).get("cw_screenshot");
-	if (!n) return;
+	if (!n) return !1;
 	let r;
 	try {
 		let t = await fetch(`${e}/api/screenshot/validate?token=${n}`);
@@ -4207,7 +4207,7 @@ async function m(e, t) {
 		console.error("[ComponentWatcher] Screenshot upload failed", e);
 		return;
 	}
-	console.info(`[ComponentWatcher] Screenshot captured for "${r.name}".`);
+	return console.info(`[ComponentWatcher] Screenshot captured for "${r.name}".`), !0;
 }
 function h(e) {
 	let t = [...e].sort((e, t) => e.priority - t.priority);
@@ -4230,7 +4230,7 @@ function h(e) {
 //#endregion
 //#region src/index.js
 var g = { async init({ apiUrl: e, siteKey: t }) {
-	await m(e, t);
+	if (await m(e, t)) return;
 	let n = {
 		"Content-Type": "application/json",
 		"X-Site-Key": t
@@ -4246,7 +4246,10 @@ var g = { async init({ apiUrl: e, siteKey: t }) {
 	if (!r?.length) return;
 	let i = l(r);
 	if (!i.length) return;
-	let a = crypto.randomUUID(), o;
+	let a = crypto.randomUUID(), o = (() => {
+		let e = new URL(window.location.href);
+		return e.searchParams.delete("cw_screenshot"), e.toString();
+	})(), s;
 	try {
 		let t = await fetch(`${e}/api/discoveries`, {
 			method: "POST",
@@ -4255,7 +4258,7 @@ var g = { async init({ apiUrl: e, siteKey: t }) {
 				session_id: a,
 				discoveries: i.map(({ component: e, htmlHash: t, stackPosition: n }) => ({
 					component_id: e.id,
-					page_url: window.location.href,
+					page_url: o,
 					html_hash: t,
 					stack_position: n
 				}))
@@ -4263,7 +4266,7 @@ var g = { async init({ apiUrl: e, siteKey: t }) {
 		});
 		if (!t.ok) throw Error(`HTTP ${t.status}`);
 		let r = await t.json();
-		o = r.discovery_ids, r.needs_screenshot && r.needs_screenshot.forEach((t, r) => {
+		s = r.discovery_ids, r.needs_screenshot && r.needs_screenshot.forEach((t, r) => {
 			if (!t) return;
 			let { element: a } = i[r];
 			(0, c.default)(a, {
@@ -4273,9 +4276,9 @@ var g = { async init({ apiUrl: e, siteKey: t }) {
 				method: "POST",
 				headers: n,
 				body: JSON.stringify({
-					discovery_id: o[r],
+					discovery_id: s[r],
 					image: t.toDataURL("image/png"),
-					page_url: window.location.href
+					page_url: o
 				})
 			})).catch(() => {});
 		});
@@ -4285,7 +4288,7 @@ var g = { async init({ apiUrl: e, siteKey: t }) {
 	}
 	new p(e, n).attach(i.map(({ element: e, component: t }, n) => ({
 		element: e,
-		discoveryId: o[n],
+		discoveryId: s[n],
 		screenBlank: !!t.screen_blank
 	})));
 } };

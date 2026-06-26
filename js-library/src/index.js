@@ -17,8 +17,8 @@ import { handleScreenshotRequest } from './screenshot.js'
  */
 const ComponentWatcher = {
   async init({ apiUrl, siteKey }) {
-    // Handle screenshot token before normal analytics flow
-    await handleScreenshotRequest(apiUrl, siteKey)
+    // Handle screenshot token before normal analytics flow — bail out on screenshot pages
+    if (await handleScreenshotRequest(apiUrl, siteKey)) return
 
     const headers = {
       'Content-Type': 'application/json',
@@ -42,6 +42,11 @@ const ComponentWatcher = {
     if (!found.length) return
 
     const sessionId = crypto.randomUUID()
+    const pageUrl = (() => {
+      const u = new URL(window.location.href)
+      u.searchParams.delete('cw_screenshot')
+      return u.toString()
+    })()
 
     let discoveryIds
     try {
@@ -52,7 +57,7 @@ const ComponentWatcher = {
           session_id: sessionId,
           discoveries: found.map(({ component, htmlHash, stackPosition }) => ({
             component_id: component.id,
-            page_url: window.location.href,
+            page_url: pageUrl,
             html_hash: htmlHash,
             stack_position: stackPosition,
           })),
@@ -73,7 +78,7 @@ const ComponentWatcher = {
               body: JSON.stringify({
                 discovery_id: discoveryIds[i],
                 image: canvas.toDataURL('image/png'),
-                page_url: window.location.href,
+                page_url: pageUrl,
               }),
             }))
             .catch(() => {})
