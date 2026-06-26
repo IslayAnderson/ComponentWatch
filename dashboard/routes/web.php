@@ -37,8 +37,8 @@ Route::middleware('auth')->group(function () {
         ->name('sites.components.screenshot-token');
 
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
-    Route::post('/admin/impersonate/{user}', [ImpersonateController::class, 'start'])->name('admin.impersonate');
     Route::post('/admin/impersonate/stop', [ImpersonateController::class, 'stop'])->name('admin.impersonate.stop');
+    Route::post('/admin/impersonate/{user}', [ImpersonateController::class, 'start'])->name('admin.impersonate');
 });
 
 require __DIR__.'/auth.php';
