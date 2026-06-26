@@ -10,7 +10,9 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Component extends Model
 {
-    protected $fillable = ['site_id', 'name', 'description'];
+    protected $fillable = ['site_id', 'name', 'description', 'screen_blank'];
+
+    protected $casts = ['screen_blank' => 'boolean'];
 
     public function site(): BelongsTo
     {

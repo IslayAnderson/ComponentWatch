@@ -37,6 +37,7 @@ class ComponentController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'screen_blank' => 'boolean',
             'macros' => 'array',
             'macros.*.type' => 'required|in:id,css,js',
             'macros.*.value' => 'required|string',
@@ -46,6 +47,7 @@ class ComponentController extends Controller
         $component = $site->components()->create([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
+            'screen_blank' => $validated['screen_blank'] ?? false,
         ]);
 
         foreach ($validated['macros'] ?? [] as $i => $macro) {
@@ -76,6 +78,7 @@ class ComponentController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'screen_blank' => 'boolean',
             'macros' => 'array',
             'macros.*.id' => 'nullable|integer|exists:macros,id',
             'macros.*.type' => 'required|in:id,css,js',
@@ -86,6 +89,7 @@ class ComponentController extends Controller
         $component->update([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
+            'screen_blank' => $validated['screen_blank'] ?? false,
         ]);
 
         $incomingIds = collect($validated['macros'] ?? [])->pluck('id')->filter()->values();

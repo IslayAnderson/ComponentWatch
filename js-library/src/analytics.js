@@ -6,6 +6,7 @@ export class Analytics {
   #apiUrl
   #headers
   #discoveryMap = new Map() // element -> discoveryId
+  #screenBlankElements = new Set() // elements with screen_blank enabled
   #visibleElements = new Set() // elements currently in the viewport
   #buffer = []
   #flushInterval = null
@@ -18,8 +19,9 @@ export class Analytics {
   }
 
   attach(discoveries) {
-    for (const { element, discoveryId } of discoveries) {
+    for (const { element, discoveryId, screenBlank } of discoveries) {
       this.#discoveryMap.set(element, discoveryId)
+      if (screenBlank) this.#screenBlankElements.add(element)
       this.#listen(element)
     }
 
@@ -69,14 +71,25 @@ export class Analytics {
 
       if (!mac && !win) return
 
+      const shortcut = e.key === 'PrintScreen' ? 'PrintScreen' : `Cmd+Shift+${e.key}`
+      let shouldBlank = false
+
       for (const el of this.#visibleElements) {
-        this.#record(el, 'screenshot', {
-          shortcut: e.key === 'PrintScreen' ? 'PrintScreen' : `Cmd+Shift+${e.key}`,
-        })
+        this.#record(el, 'screenshot', { shortcut })
+        if (this.#screenBlankElements.has(el)) shouldBlank = true
       }
+
+      if (shouldBlank) this.#flashBlankOverlay()
     }
 
     document.addEventListener('keydown', this.#screenshotHandler)
+  }
+
+  #flashBlankOverlay() {
+    const overlay = document.createElement('div')
+    overlay.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:2147483647;pointer-events:none'
+    document.body.appendChild(overlay)
+    setTimeout(() => overlay.remove(), 800)
   }
 
   #record(el, type, payload = null) {

@@ -8,6 +8,7 @@ const props = defineProps({ site: Object, component: Object })
 const form = useForm({
     name: props.component.name,
     description: props.component.description ?? '',
+    screen_blank: props.component.screen_blank ?? false,
     macros: props.component.macros.map(m => ({ ...m })),
 })
 
@@ -43,6 +44,18 @@ function submit() {
                     <div>
                         <label class="mb-1 block text-sm font-medium text-gray-700">Description</label>
                         <textarea v-model="form.description" rows="2" class="w-full rounded border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                    </div>
+                    <div class="flex items-center justify-between rounded border border-gray-200 bg-gray-50 px-4 py-3">
+                        <div>
+                            <p class="text-sm font-medium text-gray-700">Screen Blanking</p>
+                            <p class="text-xs text-gray-400 mt-0.5">Briefly blank the screen when a user takes a screenshot with this component visible.</p>
+                        </div>
+                        <button type="button" @click="form.screen_blank = !form.screen_blank"
+                            :class="form.screen_blank ? 'bg-indigo-600' : 'bg-gray-200'"
+                            class="relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors focus:outline-none">
+                            <span :class="form.screen_blank ? 'translate-x-5' : 'translate-x-1'"
+                                class="inline-block h-4 w-4 translate-y-1 rounded-full bg-white shadow transition-transform" />
+                        </button>
                     </div>
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700">Macros</label>

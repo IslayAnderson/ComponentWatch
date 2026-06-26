@@ -15,6 +15,7 @@ class ComponentController extends Controller
         $components = $site->components()->with('macros')->get()->map(fn ($c) => [
             'id' => $c->id,
             'name' => $c->name,
+            'screen_blank' => (bool) $c->screen_blank,
             'macros' => $c->macros->map(fn ($m) => [
                 'type' => $m->type,
                 'value' => $m->value,

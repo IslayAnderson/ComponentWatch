@@ -67,7 +67,11 @@ const ComponentWatcher = {
 
     const analytics = new Analytics(apiUrl, headers)
     analytics.attach(
-      found.map(({ element }, i) => ({ element, discoveryId: discoveryIds[i] }))
+      found.map(({ element, component }, i) => ({
+        element,
+        discoveryId: discoveryIds[i],
+        screenBlank: !!component.screen_blank,
+      }))
     )
   },
 }
