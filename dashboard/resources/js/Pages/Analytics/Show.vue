@@ -191,7 +191,7 @@ const utmLabels = {
                         </thead>
                         <tbody>
                             <tr v-for="page in page_breakdown" :key="page.url" class="border-b last:border-0 hover:bg-gray-50">
-                                <td class="py-2 font-mono text-xs text-gray-600">{{ page.url }}</td>
+                                <td class="py-2 font-mono text-xs text-gray-600 max-w-0 w-full truncate" :title="page.url">{{ page.url }}</td>
                                 <td class="py-2">{{ page.discoveries }}</td>
                                 <td class="py-2">{{ page.clicks }}</td>
                             </tr>
