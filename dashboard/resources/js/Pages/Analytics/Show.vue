@@ -216,7 +216,7 @@ const utmLabels = {
                                 </div>
                             </div>
                             <div class="mt-1 flex flex-wrap gap-1">
-                                <span v-for="page in h.pages" :key="page" class="rounded bg-gray-200 px-2 py-0.5 font-mono text-xs text-gray-600">{{ page }}</span>
+                                <span v-for="page in h.pages" :key="page" class="rounded bg-gray-200 px-2 py-0.5 font-mono text-xs text-gray-600 max-w-full truncate" :title="page">{{ page }}</span>
                             </div>
                         </div>
                     </div>
