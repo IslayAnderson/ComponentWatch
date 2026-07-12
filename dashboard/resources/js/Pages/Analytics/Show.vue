@@ -7,19 +7,36 @@ const props = defineProps({
     site: Object,
     component: Object,
     stats: Object,
+    filters: Object,
     page_breakdown: Array,
     html_hashes: Array,
+    utms: Object,
     screenshots: Array,
     watcherApiUrl: String,
 })
 
 const takingScreenshot = ref(false)
 const lightbox = ref(null)
+const dateFrom = ref(props.filters?.date_from ?? '')
+const dateTo = ref(props.filters?.date_to ?? '')
 
 function formatMs(ms) {
     if (ms === null) return '—'
     if (ms < 1000) return `${ms}ms`
     return `${(ms / 1000).toFixed(1)}s`
+}
+
+function applyFilters() {
+    router.get(route('sites.components.analytics', [props.site.id, props.component.id]), {
+        date_from: dateFrom.value || undefined,
+        date_to: dateTo.value || undefined,
+    }, { preserveState: true, preserveScroll: true })
+}
+
+function clearFilters() {
+    dateFrom.value = ''
+    dateTo.value = ''
+    router.get(route('sites.components.analytics', [props.site.id, props.component.id]))
 }
 
 async function requestScreenshot() {
@@ -35,7 +52,6 @@ async function requestScreenshot() {
         const data = await res.json()
         window.open(data.url, '_blank')
 
-        // Poll for new screenshot for up to 2 minutes
         const start = Date.now()
         const poll = setInterval(() => {
             if (Date.now() - start > 120_000) {
@@ -53,6 +69,14 @@ async function requestScreenshot() {
     } catch {
         takingScreenshot.value = false
     }
+}
+
+const utmLabels = {
+    utm_source: 'Source',
+    utm_medium: 'Medium',
+    utm_campaign: 'Campaign',
+    utm_term: 'Term',
+    utm_content: 'Content',
 }
 </script>
 
@@ -84,6 +108,28 @@ async function requestScreenshot() {
         <div class="py-8">
             <div class="mx-auto max-w-5xl space-y-8 px-4">
 
+                <!-- Date filter -->
+                <div class="flex items-end gap-3">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">From</label>
+                        <input type="date" v-model="dateFrom"
+                            class="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-700 focus:border-indigo-400 focus:outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">To</label>
+                        <input type="date" v-model="dateTo"
+                            class="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-700 focus:border-indigo-400 focus:outline-none" />
+                    </div>
+                    <button @click="applyFilters"
+                        class="rounded border border-indigo-300 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100">
+                        Apply
+                    </button>
+                    <button v-if="filters.date_from || filters.date_to" @click="clearFilters"
+                        class="text-sm text-gray-400 hover:text-gray-600">
+                        Clear
+                    </button>
+                </div>
+
                 <!-- Summary stats -->
                 <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
                     <Stat label="Discoveries" :value="stats.total_discoveries" />
@@ -105,6 +151,28 @@ async function requestScreenshot() {
                             <div class="px-3 py-2 bg-gray-50 border-t border-gray-200">
                                 <p class="font-mono text-xs text-gray-500 truncate">{{ shot.page_url }}</p>
                                 <p class="text-xs text-gray-400 mt-0.5">{{ shot.created_at }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- UTM breakdown -->
+                <section v-if="Object.keys(utms).length">
+                    <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">UTM Parameters</h3>
+                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <div v-for="(values, key) in utms" :key="key" class="rounded border border-gray-200 bg-white p-4">
+                            <h4 class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">{{ utmLabels[key] ?? key }}</h4>
+                            <div class="space-y-2">
+                                <div v-for="item in values" :key="item.value">
+                                    <div class="flex items-center justify-between mb-0.5">
+                                        <span class="truncate text-sm text-gray-700">{{ item.value }}</span>
+                                        <span class="ml-2 text-xs text-gray-400 shrink-0">{{ item.count }}</span>
+                                    </div>
+                                    <div class="h-1.5 w-full rounded-full bg-gray-100">
+                                        <div class="h-1.5 rounded-full bg-indigo-400"
+                                            :style="{ width: (item.count / values[0].count * 100) + '%' }"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
